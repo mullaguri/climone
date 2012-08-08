@@ -1,18 +1,12 @@
 package org.opensource.climone.config;
 
-import java.util.EnumSet;
-
-import javax.servlet.DispatcherType;
-import javax.servlet.FilterRegistration;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
-
+import com.sun.faces.config.WebConfiguration;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import com.sun.faces.config.WebConfiguration;
+import javax.servlet.*;
+import java.util.EnumSet;
 
 public class WebAppInitializer implements WebApplicationInitializer {
 
@@ -27,8 +21,8 @@ public class WebAppInitializer implements WebApplicationInitializer {
         org.springframework.web.filter.CharacterEncodingFilter encodingFilter = new org.springframework.web.filter.CharacterEncodingFilter();
         encodingFilter.setEncoding("UTF-8");
         encodingFilter.setForceEncoding(false);
-        FilterRegistration.Dynamic encodingFilterDinamic = servletContext.addFilter("charEncodingFilter", encodingFilter);
-        encodingFilterDinamic.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+        FilterRegistration.Dynamic encodingFilterDynamic = servletContext.addFilter("charEncodingFilter", encodingFilter);
+        encodingFilterDynamic.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
         // security filter
         org.springframework.web.filter.DelegatingFilterProxy delegatingFilterProxy = new org.springframework.web.filter.DelegatingFilterProxy(
@@ -37,14 +31,21 @@ public class WebAppInitializer implements WebApplicationInitializer {
         securityFilterDynamic.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
         // webflow
-        AnnotationConfigWebApplicationContext mvcContext = new AnnotationConfigWebApplicationContext();
-        mvcContext.register(WebMvcConfig.class);
-        org.springframework.web.servlet.DispatcherServlet dispatcherServlet = new org.springframework.web.servlet.DispatcherServlet(
-                mvcContext);
+        //AnnotationConfigWebApplicationContext mvcContext = new AnnotationConfigWebApplicationContext();
+        //mvcContext.register(WebMvcConfig.class);
+        org.springframework.web.servlet.DispatcherServlet dispatcherServlet = new org.springframework.web.servlet.DispatcherServlet();
+        dispatcherServlet.setContextConfigLocation("");
         ServletRegistration.Dynamic dispatcherServletDynamic = servletContext.addServlet("dispatcherServlet", dispatcherServlet);
         dispatcherServletDynamic.setLoadOnStartup(1);
         dispatcherServletDynamic.addMapping("/view/*");
 
+
+        /*
+        //opensessioninview filter
+        OpenSessionInViewFilter openSessionInViewFilter = new OpenSessionInViewFilter();
+        FilterRegistration.Dynamic openSessionInViewFilterDynamic = servletContext.addFilter("openSessionInViewFilter", openSessionInViewFilter);
+        openSessionInViewFilterDynamic.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/view/*");
+        */
         // faces
         servletContext.setInitParameter(WebConfiguration.WebContextInitParameter.JavaxFacesProjectStage.getQualifiedName(), "Development");
         servletContext.setInitParameter(WebConfiguration.BooleanWebContextInitParameter.FaceletsSkipComments.getQualifiedName(), "true");

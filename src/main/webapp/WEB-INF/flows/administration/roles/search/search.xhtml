@@ -23,7 +23,7 @@
 
 			<br />
 
-			<p:dataTable id="roleListTable" var="role" value="#{roleModel.roleList}"
+			<p:dataTable id="roleListTable" var="role" value="#{roleModel.list}"
 				paginator="true"
 				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
 				rowsPerPageTemplate="5,10,15"
@@ -45,14 +45,14 @@
 				<p:column>
 					<p:commandLink action="edit" title="#{resourceBundle['edit']}">
 						<h:graphicImage value="/resources/images/edit.gif" />
-						<f:setPropertyActionListener target="#{roleModel.editedRole}"
+						<f:setPropertyActionListener target="#{roleModel.editedEntity}"
 							value="#{role}" />
 					</p:commandLink>
 					<p:commandLink execute="@this" render="@none"
 						oncomplete="confirmation.show()"
 						title="#{resourceBundle['delete']}">
 						<h:graphicImage value="/resources/images/delete.gif" />
-						<f:setPropertyActionListener target="#{roleModel.editedRole}"
+						<f:setPropertyActionListener target="#{roleModel.editedEntity}"
 							value="#{role}" />
 					</p:commandLink>
 				</p:column>

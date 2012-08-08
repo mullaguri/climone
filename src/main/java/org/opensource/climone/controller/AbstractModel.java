@@ -1,13 +1,19 @@
 package org.opensource.climone.controller;
 
+import org.opensource.climone.entities.EntityFilter;
+import org.opensource.climone.view.datamodel.ListDataModel;
+
 import java.io.Serializable;
 
-public abstract class AbstractModel implements Serializable {
+public abstract class AbstractModel<E> implements Serializable {
 
 	private static final long serialVersionUID = 8873499141448716342L;
 
 	protected UseCaseMode mode;
 	protected Integer pageNumber;
+    protected E editedEntity;
+    protected EntityFilter<E> filter;
+    protected ListDataModel<E> list;
 	
 	protected String email;
 	
@@ -51,5 +57,28 @@ public abstract class AbstractModel implements Serializable {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	
+
+    public E getEditedEntity() {
+        return editedEntity;
+    }
+
+    public void setEditedEntity(E editedEntity) {
+        this.editedEntity = editedEntity;
+    }
+
+    public EntityFilter<E> getFilter() {
+        return filter;
+    }
+
+    public void setFilter(EntityFilter<E> filter) {
+        this.filter = filter;
+    }
+
+    public ListDataModel<E> getList() {
+        return list;
+    }
+
+    public void setList(ListDataModel<E> list) {
+        this.list = list;
+    }
 }

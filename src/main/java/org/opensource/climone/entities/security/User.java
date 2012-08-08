@@ -1,16 +1,12 @@
 package org.opensource.climone.entities.security;
 
-import java.util.Set;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-
 import org.hibernate.annotations.ForeignKey;
 import org.opensource.climone.entities.IdentificableEntity;
 import org.opensource.climone.entities.MailEntity;
+
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class User extends IdentificableEntity implements MailEntity{
@@ -35,7 +31,7 @@ public class User extends IdentificableEntity implements MailEntity{
 	@ManyToMany
 	@JoinTable(joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	@ForeignKey(name = "fk_user_role_user", inverseName = "fk_user_role_role")
-	private Set<Role> roles;
+	private Set<Role> roles = new HashSet<Role>();
 
 	public User() {
 		super();
