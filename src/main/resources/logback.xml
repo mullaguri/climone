@@ -20,6 +20,8 @@
 		</encoder>
 	</appender>
 
+    <logger name="org.springframework.webflow" level="DEBUG"/>
+
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />
 	</root>

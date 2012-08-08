@@ -1,11 +1,8 @@
 package org.opensource.climone.controller.administration;
 
-import javax.faces.model.DataModel;
-
 import org.opensource.climone.controller.AbstractModel;
 import org.opensource.climone.entities.security.Permission;
 import org.opensource.climone.entities.security.Role;
-import org.opensource.climone.entities.security.RoleFilter;
 import org.opensource.climone.view.datamodel.DefaultSelectionDataModelListener;
 import org.opensource.climone.view.datamodel.SelectableDataModel;
 import org.springframework.context.annotation.Scope;
@@ -14,41 +11,14 @@ import org.springframework.stereotype.Controller;
 
 @Controller("roleModel")
 @Scope(value = "flow", proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class RoleModel extends AbstractModel {
+public class RoleModel extends AbstractModel<Role> {
 
 	private static final long serialVersionUID = -835255549908549635L;
-	private RoleFilter filter;
-	private DataModel<Role> roleList;
-	private Role editedRole;
 
 	private String name;
 	private String description;
 	private SelectableDataModel<Permission> permissionsDataModel;
 	private DefaultSelectionDataModelListener<Permission> permissionSelectionListener;
-
-	public RoleFilter getFilter() {
-		return filter;
-	}
-
-	public void setFilter(RoleFilter filter) {
-		this.filter = filter;
-	}
-
-	public DataModel<Role> getRoleList() {
-		return roleList;
-	}
-
-	public void setRoleList(DataModel<Role> roleList) {
-		this.roleList = roleList;
-	}
-
-	public Role getEditedRole() {
-		return editedRole;
-	}
-
-	public void setEditedRole(Role editedRole) {
-		this.editedRole = editedRole;
-	}
 
 	public String getName() {
 		return name;

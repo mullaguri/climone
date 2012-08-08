@@ -1,14 +1,11 @@
 package org.opensource.climone.entities;
 
-import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-
+import org.hibernate.annotations.Index;
 import org.opensource.climone.util.UIDGenerator;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Date;
 
 @MappedSuperclass
 public class IdentificableEntity implements Serializable {
@@ -16,12 +13,24 @@ public class IdentificableEntity implements Serializable {
 	private static final long serialVersionUID = 1330300089555997723L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(nullable = false)
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="ENT_GEN")
+    @TableGenerator(name="ENT_GEN")
 	protected Integer id;
 
 	@Column(nullable = false, length = 128)
 	protected String uid;
+
+    @Basic(optional = false)
+    @Index(name = "index_dateCreated")
+    private Date dateCreated;
+
+    @Basic(optional = false)
+    @Index(name = "index_lastModified")
+    private Date lastModified;
+
+    @Version
+    @Column(nullable = false)
+    private int version = 0;
 
 	public IdentificableEntity() {
 		uid = UIDGenerator.generateUID();
@@ -43,7 +52,31 @@ public class IdentificableEntity implements Serializable {
 		this.uid = uid;
 	}
 
-	@Override
+    public Date getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(Date dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public Date getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(Date lastModified) {
+        this.lastModified = lastModified;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    @Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;

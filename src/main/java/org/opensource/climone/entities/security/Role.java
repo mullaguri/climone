@@ -1,15 +1,11 @@
 package org.opensource.climone.entities.security;
 
-import java.util.Set;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-
 import org.hibernate.annotations.ForeignKey;
 import org.opensource.climone.entities.IdentificableEntity;
+
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Role extends IdentificableEntity {
@@ -25,7 +21,7 @@ public class Role extends IdentificableEntity {
 	@ManyToMany
 	@JoinTable(joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "per_name"))
 	@ForeignKey(name = "fk_role_perm_role", inverseName = "fk_role_perm_perm")
-	private Set<Permission> permissions;
+	private Set<Permission> permissions = new HashSet<Permission>();
 
 	public String getName() {
 		return name;

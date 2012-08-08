@@ -1,20 +1,23 @@
 package org.opensource.climone.service.impl;
 
-import java.util.List;
-
+import org.opensource.climone.dao.Dao;
 import org.opensource.climone.dao.RoleDao;
 import org.opensource.climone.dao.UserDao;
 import org.opensource.climone.entities.security.Role;
 import org.opensource.climone.entities.security.RoleFilter;
 import org.opensource.climone.entities.security.User;
-import org.opensource.climone.entities.security.UserFilter;
 import org.opensource.climone.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service("userService")
-public class UserServiceImpl extends AbstractService implements UserService {
+@Transactional(propagation = Propagation.SUPPORTS)
+public class UserServiceImpl extends AbstractService<User> implements UserService {
 
 	@Autowired
 	private UserDao userDao;
@@ -26,16 +29,28 @@ public class UserServiceImpl extends AbstractService implements UserService {
 	private PasswordEncoder passwordEncoder;
 
 	@Override
+    @Transactional(readOnly = true)
 	public User getUserByUsername(String username) {
 		return userDao.getUserByUsername(username);
 	}
 
 	@Override
+    @Transactional(readOnly = true)
 	public List<Role> getAllRoles() {
 		return roleDao.getList(new RoleFilter());
 	}
 
-	@Override
+    /**
+     * Saves the user without encoding its password
+     * @param entity
+     */
+    @Override
+    public void saveEntity(User entity) {
+        saveUser(entity, false);
+    }
+
+    @Override
+    @Transactional
 	public void saveUser(User user, boolean encodePassword) {
 		if (encodePassword) {
 			final String encodedPassword = passwordEncoder.encodePassword(user.getPassword(), user.getUid());
@@ -44,13 +59,8 @@ public class UserServiceImpl extends AbstractService implements UserService {
 		userDao.save(user);
 	}
 
-	@Override
-	public void deleteUser(User user) {
-		userDao.delete(user);
-	}
-
-	@Override
-	public List<User> getList(UserFilter filter) {
-		return userDao.getList(filter);
-	}
+    @Override
+    protected Dao<User> getServiceDao() {
+        return userDao;
+    }
 }

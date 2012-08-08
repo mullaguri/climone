@@ -1,7 +1,6 @@
 package org.opensource.climone.service.impl;
 
-import java.util.List;
-
+import org.opensource.climone.dao.Dao;
 import org.opensource.climone.dao.PermissionDao;
 import org.opensource.climone.dao.RoleDao;
 import org.opensource.climone.entities.security.Permission;
@@ -11,9 +10,12 @@ import org.opensource.climone.entities.security.RoleFilter;
 import org.opensource.climone.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service("roleService")
-public class RoleServiceImpl extends AbstractService implements RoleService {
+public class RoleServiceImpl extends AbstractService<Role> implements RoleService {
 
 	@Autowired
 	private RoleDao roleDao;
@@ -21,29 +23,19 @@ public class RoleServiceImpl extends AbstractService implements RoleService {
 	@Autowired
 	private PermissionDao permissionDao;
 
-	@Override
+    @Transactional(readOnly = true)
 	public List<Role> getList(Role example) {
 		return roleDao.getList(new RoleFilter());
 	}
 
-	@Override
+    @Override
+    @Transactional(readOnly = true)
 	public List<Permission> getAllPermissions() {
 		return permissionDao.getList(new PermissionFilter());
 	}
 
-	@Override
-	public void saveRole(Role editedRole) {
-		roleDao.save(editedRole);
-	}
-
-	@Override
-	public void deleteRole(Role editedRole) {
-		roleDao.delete(editedRole);
-	}
-
-	@Override
-	public List<Role> getList(RoleFilter filter) {
-		return roleDao.getList(filter);
-	}
-
+    @Override
+    protected Dao getServiceDao() {
+        return roleDao;
+    }
 }

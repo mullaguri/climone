@@ -9,9 +9,9 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 @Configuration
 @ComponentScan(basePackages = { "org.opensource.climone.dao.impl", 
-                                "org.opensource.climone.service.impl"})
+                                "org.opensource.climone.service.impl", "org.opensource.climone.controller"})
 @PropertySource("classpath:app-config.properties")
-@Import({ PersistenceConfig.class, SecurityConfig.class, MailConfig.class, TaskConfig.class})
+@Import({ PersistenceConfig.class, SecurityConfig.class, MailConfig.class, TaskConfig.class, WebMvcConfig.class})
 public class RootConfig {
 	
 	@Bean

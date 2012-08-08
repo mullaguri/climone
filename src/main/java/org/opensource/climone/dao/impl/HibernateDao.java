@@ -1,18 +1,19 @@
 package org.opensource.climone.dao.impl;
 
-import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
-import java.util.List;
-import java.util.Map;
-
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.opensource.climone.entities.EntityFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public abstract class HibernateDao<T> {
@@ -31,6 +32,11 @@ public abstract class HibernateDao<T> {
 	public T getById(Serializable id) {
 		return (T) getCurrentSession().get(getGenericType(), id);
 	}
+
+    public T getByUid(String uid) {
+        return (T) getCurrentSession().createCriteria(getGenericType())
+                .add(Restrictions.eq("uid", uid)).uniqueResult();
+    }
 
 	private Class<T> getGenericType() {
 		return (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];

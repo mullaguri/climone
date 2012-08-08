@@ -1,11 +1,8 @@
 package org.opensource.climone.controller.administration;
 
-import javax.faces.model.DataModel;
-
 import org.opensource.climone.controller.AbstractModel;
 import org.opensource.climone.entities.security.Role;
 import org.opensource.climone.entities.security.User;
-import org.opensource.climone.entities.security.UserFilter;
 import org.opensource.climone.view.datamodel.DefaultSelectionDataModelListener;
 import org.opensource.climone.view.datamodel.SelectableDataModel;
 import org.springframework.context.annotation.Scope;
@@ -14,16 +11,10 @@ import org.springframework.stereotype.Controller;
 
 @Controller("userModel")
 @Scope(value = "flow", proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class UserModel extends AbstractModel implements Cloneable {
+public class UserModel extends AbstractModel<User> implements Cloneable {
 
 	private static final long serialVersionUID = -4636891182800712837L;
-	private DataModel<User> userList;
-
-	private UserFilter filter;
-
 	private String sortProperty;
-
-	private User editedUser;
 
 	private String firstName;
 	private String lastName;
@@ -38,36 +29,12 @@ public class UserModel extends AbstractModel implements Cloneable {
 	public UserModel() {
 	}
 
-	public UserFilter getFilter() {
-		return filter;
-	}
-
-	public void setFilter(UserFilter filter) {
-		this.filter = filter;
-	}
-
 	public String getSortProperty() {
 		return sortProperty;
 	}
 
 	public void setSortProperty(String sortProperty) {
 		this.sortProperty = sortProperty;
-	}
-
-	public DataModel<User> getUserList() {
-		return userList;
-	}
-
-	public void setUserList(DataModel<User> userList) {
-		this.userList = userList;
-	}
-
-	public User getEditedUser() {
-		return editedUser;
-	}
-
-	public void setEditedUser(User editedUser) {
-		this.editedUser = editedUser;
 	}
 
 	public Integer getPageNumber() {

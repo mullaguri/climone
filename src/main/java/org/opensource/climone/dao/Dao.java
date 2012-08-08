@@ -1,9 +1,9 @@
 package org.opensource.climone.dao;
 
+import org.opensource.climone.entities.EntityFilter;
+
 import java.io.Serializable;
 import java.util.List;
-
-import org.opensource.climone.entities.EntityFilter;
 
 public interface Dao<T> {
 	
@@ -18,4 +18,6 @@ public interface Dao<T> {
 	public void save(T obj);
 
 	public void delete(T obj);
+
+    public T getByUid(String uid);
 }
