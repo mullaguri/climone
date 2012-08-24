@@ -49,7 +49,7 @@ import org.springframework.webflow.execution.RequestContext;
  * <li>When an existing flow ends, commit the changes made to the session in a transaction if the ending state is a
  * commit state. Then, unbind the context and close it.
  * </ul>
- * 
+ *
  * The general data access pattern implemented here is:
  * <ul>
  * <li>Create a new persistence context when a new flow execution with the 'persistenceContext' attribute starts
@@ -58,7 +58,7 @@ import org.springframework.webflow.execution.RequestContext;
  * <li>On successful flow completion, commit and flush those edits to the database, applying a version check if
  * necessary.
  * </ul>
- * 
+ *
  * <p>
  * Note: All data access except for the final commit will, by default, be non-transactional. However, a flow may call
  * into a transactional service layer to fetch objects during the conversation in the context of a read-only system
@@ -69,7 +69,7 @@ import org.springframework.webflow.execution.RequestContext;
  * want intermediate flushing to happen, as the nature of a flow implies a transient, isolated resource that can be
  * canceled before it ends. Generally, the only time a read-write transaction should be started is upon successful
  * completion of the conversation, triggered by reaching a 'commit' end state.
- * 
+ *
  * @author Keith Donald
  * @author Juergen Hoeller
  * @author Ben Hale
@@ -107,10 +107,11 @@ public class Hibernate4FlowExecutionListener extends FlowExecutionListenerAdapte
 
 	public void sessionStarting(RequestContext context, FlowSession session, MutableAttributeMap input) {
 		boolean reusePersistenceContext = false;
+		boolean needsNewSession = needsNewSession(session);
 		if (isParentPersistenceContext(session)) {
 			if (isPersistenceContext(session.getDefinition())) {
 				setHibernateSession(session, getHibernateSession(session.getParent()));
-				reusePersistenceContext = true;
+				reusePersistenceContext = !needsNewSession;
 			} else {
 				unbind(getHibernateSession(session.getParent()));
 			}
@@ -118,6 +119,9 @@ public class Hibernate4FlowExecutionListener extends FlowExecutionListenerAdapte
 		if (isPersistenceContext(session.getDefinition()) && (!reusePersistenceContext)) {
 			Session hibernateSession = createSession(context);
 			setHibernateSession(session, hibernateSession);
+			if (needsNewSession && isParentPersistenceContext(session)) {
+				unbind(getHibernateSession(session.getParent()));
+			}
 			bind(hibernateSession);
 		}
 	}
@@ -137,7 +141,7 @@ public class Hibernate4FlowExecutionListener extends FlowExecutionListenerAdapte
 	}
 
 	public void sessionEnding(RequestContext context, FlowSession session, String outcome, MutableAttributeMap output) {
-		if (isParentPersistenceContext(session)) {
+		if (isParentPersistenceContext(session) && !needsNewSession(session)) {
 			return;
 		}
 		if (isPersistenceContext(session.getDefinition())) {
@@ -159,7 +163,7 @@ public class Hibernate4FlowExecutionListener extends FlowExecutionListenerAdapte
 
 	public void sessionEnded(RequestContext context, FlowSession session, String outcome, AttributeMap output) {
 		if (isParentPersistenceContext(session)) {
-			if (!isPersistenceContext(session.getDefinition())) {
+			if (!isPersistenceContext(session.getDefinition()) || needsNewSession(session)) {
 				bind(getHibernateSession(session.getParent()));
 			}
 		}
@@ -183,12 +187,17 @@ public class Hibernate4FlowExecutionListener extends FlowExecutionListenerAdapte
 		return ((!flowSession.isRoot()) && isPersistenceContext(flowSession.getParent().getDefinition()));
 	}
 
+	private boolean needsNewSession(FlowSession flowSession) {
+		String needsNewSession = (String) flowSession.getDefinition().getAttributes().get("needsNewSession");
+		return needsNewSession != null && needsNewSession.equals("true");
+	}
+
 	private Session createSession(RequestContext context) {
 	    final SessionBuilder sessionBuilder = sessionFactory.withOptions();
-	    if (entityInterceptor != null){	        
-            sessionBuilder.interceptor(entityInterceptor);    
+	    if (entityInterceptor != null){
+            sessionBuilder.interceptor(entityInterceptor);
 	    }
-	    
+
 	    Session session = sessionBuilder.openSession();
 		session.setFlushMode(FlushMode.MANUAL);
 		return session;
